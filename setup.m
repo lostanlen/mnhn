@@ -27,8 +27,8 @@ opts{2}.time.T = T;
 opts{2}.time.gamma_bounds = [1 scattering_modulations.nTemporal_modulations];
 
 % Frequential scattering if required
-if isfield(scattering_modulations, 'nTemporal_modulations')
-    opts{2}.gamma.T = 2^(scattering_modulations.nTemporal_modulations);
+if isfield(scattering_modulations, 'nSpectral_modulations')
+    opts{2}.gamma.T = 2^(scattering_modulations.nSpectral_modulations);
 end
 
 archs = sc_setup(opts);
