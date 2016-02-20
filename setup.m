@@ -1,4 +1,5 @@
 % nFilters_per_octave is an integer
+% sample_rate is an integer in Hertz, usually 44100
 % ROI_duration is the duration in seconds of the region of interest
 % scattering_modulations is a structure with two fields:
 % - scattering_modulations.nTemporal_modulations is an integer
@@ -6,7 +7,11 @@
 % If scattering_modulations.nSpectral_modulations is absent, the setup performs
 % plain scattering along time. Otherwise, it performs joint time-frequency
 % scattering (see Andén et al. 2015).
-function setup(nFilters_per_octave, ROI_duration, scattering_modulations)
+function archs = setup(...
+    nFilters_per_octave, ...
+    ROI_duration, ...
+    sample_rate, ...
+    scattering_modulations)
 T = pow2(nextpow2(round(ROI_duration * sample_rate * 0.5)));
 
 % Wavelet transform
@@ -25,4 +30,6 @@ opts{2}.time.gamma_bounds = [1 scattering_modulations.nTemporal_modulations];
 if isfield(scattering_modulations, 'nTemporal_modulations')
     opts{2}.gamma.T = 2^(scattering_modulations.nTemporal_modulations);
 end
+
+archs = sc_setup(opts);
 end
