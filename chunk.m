@@ -1,7 +1,7 @@
 function chunked_waveform = chunk(waveform, archs)
 
 bank_spec = archs{1}.banks{1}.spec;
-chunk_length = bank_spec.size - 2 * bank_spec.T; % N = 4T
+chunk_length = bank_spec.size;
 unpadded_signal_size = length(waveform);
 
 if unpadded_signal_size<=chunk_length
