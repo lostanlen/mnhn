@@ -25,12 +25,12 @@ waveform_path = '~/MATLAB/mnhn/test_sound_tropicalforest.wav';
 
 % take left channel
 waveform = waveform(:, 1);
-%% chunk and propagate
+
+%% chunk
 audio_chunks = chunk(waveform, archs);
-x = waveform(1:4*T).';
 
 %%
-[S, U] = sc_propagate(x, archs);
+[S, U] = sc_propagate(audio_chunks, archs);
 
 %% get gamma bands
 gamma_min = min(gamma_bands(:));
