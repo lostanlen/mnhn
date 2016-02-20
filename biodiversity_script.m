@@ -20,10 +20,12 @@ archs = setup( ...
     scattering_modulations);
 
 %% load (in script)
-waveform_path = '~/MATLAB/mnhn/test_sound_tropicalforest.wav';
+waveform_path = 'test_sound_tropicalforest.wav';
 [waveform, sample_rate] = audioread_compat(waveform_path);
 
 % take left channel
 waveform = waveform(:, 1);
 
 %%
+[S1_bands, S2_bands] = invariant_scattering(waveform, archs, ...
+    frequency_bands, sample_rate);
