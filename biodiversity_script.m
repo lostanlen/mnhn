@@ -25,7 +25,7 @@ waveform_path = '~/MATLAB/mnhn/test_sound_tropicalforest.wav';
 [waveform, sample_rate] = audioread_compat(waveform_path);
 
 % take left channel
-waveform = waveform(1:10000, 1);
+waveform = waveform(:, 1);
 
 % chunk
 audio_chunks = chunk(waveform, archs);
@@ -36,48 +36,54 @@ audio_chunks = chunk(waveform, archs);
 %% get gamma bands
 band_gammas = get_band_gammas(archs, band_freqs, sample_rate);
 
-%% First-order coefficients
-
-nBands = length(band_gammas);
-for band_index = 1:nBands
-    gamma_start = band_gammas(band_index, 1);
-    gamma_stop = band_gammas(band_index, 2);
-    S1_bands{} = S1.data(:, gamma_start:gamma_stop).';
+%% Plain case
+% unchunk S1
+gamma_subscript = ndims(S{1+1}.data);
+if gamma_subscript == 3
+    S1 = S{1+1}.data;
+    S1 = S1((1+end/4):(3*end/4), :, :);
+    S1 = reshape(S1, size(S1, 1) * size(S1, 2), size(S1, 3));
+    S{1+1}.data = S1;
 end
 
-%% Setup gamma bands
-gamma_bounds = archs{1}.banks{1}.behavior.gamma_bounds;
-min_gamma = max(gamma_bounds(1), 1);
-max_gamma = min(gamma_bounds(2), length(archs{1}.banks{1}.metas));
-resolutions = [archs{1}.banks{1}.metas(min_gamma:max_gamma).resolution];
-frequencies = archs{1}.banks{1}.spec.mother_xi * sample_rate * resolutions;
-nGammas = length(frequencies);
-
-nBands = size(band_freqs, 2);
-gamma_bands = zeros(2, nBands);
-for band_index = 1:nBands
-    band_min_gamma = (min_gamma - 1) + ...
-        find(frequencies < band_freqs(2, band_index), 1);
-    band_min_gamma(isempty(band_min_gamma)) = min_gamma;
-    gamma_bands(1, band_index) = band_min_gamma;
-    band_max_gamma = (min_gamma - 1) + ...
-        find(frequencies > band_freqs(1, band_index), 1, 'last'); 
-    band_max_gamma(isempty(band_max_gamma)) = max_gamma;
-    gamma_bands(2, band_index) = band_max_gamma;
-end
-
-
-%% Stack scattering coefficients according to bands
-nBands = length(band_refs);
-bands = cell(1, nBands);
-nTime_frames = size(S{1+2}{1}.data{1}{1}, 1);
-refs = generate_refs(S{1+2}{1}.data, 1, S{1+2}{1}.ranges{1+0});
-for band_index = 1:nBands
-    nCoefficients = length(band_refs{band_index});
-    band = zeros(nTime_frames, nCoefficients);
-    for coefficient_index = 1:nCoefficients
-        ref = refs(:, band_refs{band_index}(coefficient_index));
-        band(:, coefficient_index) = subsref(S{1+2}{1}.data, ref);
+% unchunk S2
+if gamma_subscript == 3
+    for gamma2_index = 1:length(S{1+2}.data)
+        S2_node = S{1+2}.data{gamma2_index};
+        S2_node = S2_node((1+end/4):(3*end/4), :, :);
+        S2_node = reshape(S2_node, ...
+            size(S2_node, 1) * size(S2_node, 2), size(S2_node, 3));
+        S{1+2}.data{gamma2_index} = S2_node;
     end
-    bands{band_index} = band;
+end
+
+%%
+nBands = length(band_gammas);
+S1_bands = cell(1, nBands);
+S2_bands = cell(1, nBands);
+
+for band_index = 1:nBands
+    gamma_start = band_gammas(1, band_index);
+    gamma_stop = band_gammas(2, band_index);
+    % S1 band
+    S1_bands{band_index} = S{1+1}.data(:, gamma_start:gamma_stop);
+    % S2 band
+    nGamma2s = length(S{1+2}.data);
+    S2_bands{band_index} = cell(1, nGamma2s);
+    for gamma2_index = 1:length(S{1+2}.data)
+        gamma_range = S{1+2}.ranges{1+0}{gamma2_index}(:, gamma_subscript);
+        assert(gamma_range(1)==1);
+        S2_band = S{1+2}.data{gamma2_index}(:, ...
+            gamma_start:min(gamma_stop, end));
+        if ~isempty(S2_band)
+            S2_bands{band_index}{gamma2_index} = sum(S2_band, 2);
+        end
+    end
+    S2_bands{band_index} = [S2_bands{band_index}{:}];
+end
+
+%% Concatenate S1 bands and S2 bands
+S_bands = cell(1, nBands);
+for band_index = 1:nBands
+    S_bands{band_index} = cat(2, S1_bands{band_index}, S2_bands{band_index});
 end
