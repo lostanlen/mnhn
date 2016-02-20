@@ -18,6 +18,7 @@ T = pow2(nextpow2(round(ROI_duration * sample_rate * 0.5)));
 opts{1}.time.nFilters_per_octave = nFilters_per_octave;
 opts{1}.time.T = T;
 opts{1}.time.size = 4*T;
+opts{1}.time.gamma_bounds = [1 nFilters_per_octave*8];
 opts{1}.time.is_chunked = false;
 
 % Time scattering
