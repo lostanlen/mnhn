@@ -9,9 +9,9 @@ band_freqs = ...
     7200 16000].';
 sample_rate = 44100;
 nFilters_per_octave = 12;
-ROI_duration = 0.5; % in seconds
+ROI_duration = 1.0; % in seconds
 clear scattering_modulations;
-scattering_modulations.nTemporal_modulations = 8;
+scattering_modulations.nTemporal_modulations = 12;
 
 archs = setup( ...
     nFilters_per_octave, ...
@@ -19,6 +19,8 @@ archs = setup( ...
     sample_rate, ...
     scattering_modulations);
 
+% get gamma bands
+band_gammas = get_band_gammas(archs, band_freqs, sample_rate);
 
 %% load (in script)
 waveform_path = '~/MATLAB/mnhn/test_sound_tropicalforest.wav';
@@ -30,11 +32,8 @@ waveform = waveform(:, 1);
 % chunk
 audio_chunks = chunk(waveform, archs);
 
-%%
+% compute scattering transform
 [S, U] = sc_propagate(audio_chunks, archs);
-
-%% get gamma bands
-band_gammas = get_band_gammas(archs, band_freqs, sample_rate);
 
 %% Plain case
 % unchunk S1
