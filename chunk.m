@@ -6,7 +6,7 @@ unpadded_signal_size = length(waveform);
 
 if unpadded_signal_size<=chunk_length
     % only one chunk
-    nReplications = ceil(unpadded_signal_size / chunk_length);
+    nReplications = ceil(chunk_length / unpadded_signal_size);
     padded_waveform = repmat(waveform, [nReplications 1]);
     chunked_waveform = padded_waveform(1:chunk_length);  
 elseif unpadded_signal_size>chunk_length
