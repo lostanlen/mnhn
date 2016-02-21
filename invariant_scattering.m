@@ -27,9 +27,9 @@ end
 
 
 % sum scattering coefficients (S2) within each frequency band
-if length(archs{1}.banks) == 1
+if length(archs{2}.banks) == 1
     S2_bands = extract_plain(S{1+2}, band_gammas);
-elseif length(archs{1}.banks) == 2
+elseif length(archs{2}.banks) == 2
     S2_bands = extract_joint(S{1+2}, band_gammas);
 end
 end
