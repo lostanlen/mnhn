@@ -11,7 +11,8 @@ sample_rate = 44100;
 nFilters_per_octave = 12;
 ROI_duration = 1.0; % in seconds
 clear scattering_modulations;
-scattering_modulations.nTemporal_modulations = 12;
+scattering_modulations.nTemporal_modulations = 10;
+%scattering_modulations.nSpectral_modulations = 3;
 
 archs = setup( ...
     nFilters_per_octave, ...
@@ -27,5 +28,7 @@ waveform_path = 'test_sound_tropicalforest.wav';
 waveform = waveform(:, 1);
 
 %%
+tic();
 [S1_bands, S2_bands] = invariant_scattering(waveform, archs, ...
     frequency_bands, sample_rate);
+toc();
