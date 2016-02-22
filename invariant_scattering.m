@@ -22,7 +22,7 @@ for band_index = 1:nBands
     gamma_start = band_gammas(1, band_index);
     gamma_stop = band_gammas(2, band_index);
     % S1 band
-    S1_bands{band_index} = S{1+1}.data(:, gamma_start:gamma_stop);
+    S1_bands{band_index} = S{1+1}.data(:, gamma_start:gamma_stop).';
 end
 
 

@@ -82,5 +82,5 @@ toc();
 %% Concatenation of first- and second-order coefficients
 S_bands = cell(1, length(S1_bands));
 for band_index = 1:length(S1_bands)
-    S_bands{band_index} = cat(2, S1_bands{band_index}, S2_bands{band_index}).';
+    S_bands{band_index} = cat(1, S1_bands{band_index}, S2_bands{band_index});
 end

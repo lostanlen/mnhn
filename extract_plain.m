@@ -16,6 +16,6 @@ for band_index = 1:nBands
             S2_bands{band_index}{gamma2_index} = sum(S2_band, 2);
         end
     end
-    S2_bands{band_index} = [S2_bands{band_index}{:}];
+    S2_bands{band_index} = [S2_bands{band_index}{:}].';
 end
 end
